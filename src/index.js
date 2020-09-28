@@ -4,10 +4,21 @@ const morgan = require('morgan');
 const handlebars = require('express-handlebars');
 
 const app = express();
-const port = 3001;
+const port = 3000;
+
+const route = require('./routes/index.route');
+const db = require('./config/db/index');
+
+//connect to db
+db.connect();
 
 app.use(express.static(path.join(__dirname, '/public')));
 app.use(morgan('combined'));
+app.use(express.urlencoded({
+    extended: true
+}));
+app.use(express.json());
+
 //template engine   
 app.engine('hbs', handlebars({
     extname: '.hbs'
@@ -15,12 +26,8 @@ app.engine('hbs', handlebars({
 app.set('view engine', 'hbs');
 app.set('views', path.join(__dirname, 'assets/views'));
 
-app.get('/', (req, res) => {
-    return res.render('home');
-});
-app.get('/route_1', (req, res) => {
-    return res.render('route_1');
-})
+//route initialize
+route(app);
 
 app.listen(port, () => {
     console.log(`app is listening port ${port}`);
